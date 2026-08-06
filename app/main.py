@@ -1,9 +1,13 @@
 from fastapi import FastAPI
+from app.routers.stocks import router as stocks_router
+from app.routers.portfolio import router as portfolio_router
 
 app = FastAPI()
+app.include_router(stocks_router)
+app.include_router(portfolio_router)
 
 @app.get("/")
 def home():
     return {
-        "welcome puta madre..."
+        "message":"welcome puta madre..."
     }
