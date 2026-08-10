@@ -6,8 +6,8 @@ from app.config import settings
 response = httpx.get(
     "https://www.alphavantage.co/query",
     params={
-        "function": "GLOBAL_QUOTE",
-        "symbol": "AAPL",
+        "function": "SYMBOL_SEARCH",
+        "keywords": "apple",
         "apikey": settings.alpha_vantage_api_key
     }
 )

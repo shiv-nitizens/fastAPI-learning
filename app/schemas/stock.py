@@ -12,3 +12,10 @@ class StockQuote(BaseModel):
     previous_close: float
     change: float
     change_percent: float
+
+class StockSearchResult(BaseModel):
+    symbol:str
+    name:str
+    type:str
+    region:str
+    currency:str
