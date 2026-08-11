@@ -9,3 +9,10 @@ class PortfolioResponse(BaseModel):
     symbol: str
     shares: int
     buy_price: float
+
+class PortfolioEntry(BaseModel):
+    id:UUID
+    symbol:str
+    shares:int
+    buy_price:float
+    invested_value:float

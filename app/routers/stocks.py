@@ -7,14 +7,6 @@ router = APIRouter(
     prefix="/stocks",
     tags=["Stocks"]
 )
-
-stocks = [
-    {"symbol": "AAPL", "name": "Apple Inc."},
-    {"symbol": "NVDA", "name": "NVIDIA Corporation"},
-    {"symbol": "MSFT", "name": "Microsoft Corporation"},
-    {"symbol": "TSLA", "name": "Tesla Inc."},
-]
-
 @router.get("/search",response_model=list[StockSearchResult])
 async def search_stocks(q: str):
     async with httpx.AsyncClient() as client:
