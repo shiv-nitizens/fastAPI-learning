@@ -1,9 +1,11 @@
 from uuid import uuid4
 from app.schemas.portfolio import PortfolioEntry
+from app.repositories.portfolio_repository import create_portfolio_entry,get_all_portfolio_entries
 
-portfolio = []
+async def get_portfolio():
+    return await get_all_portfolio_entries()
 
-def add_to_portfolio(entry):
+async def add_to_portfolio(entry):
     invested_value = entry.shares * entry.buy_price
 
     portfolio_entry = PortfolioEntry(
@@ -14,6 +16,6 @@ def add_to_portfolio(entry):
         invested_value=invested_value
     )
 
-    portfolio.append(portfolio_entry)
+    await create_portfolio_entry(portfolio_entry)
 
     return portfolio_entry
