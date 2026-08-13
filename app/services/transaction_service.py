@@ -3,6 +3,8 @@ from uuid import uuid4
 from app.models.transaction import Transaction, TransactionType
 from app.repositories.transaction_repository import create_transaction as save_transaction , get_all_transactions
 from decimal import Decimal
+from app.services.stock_service import get_stock_quote
+import asyncio
 
 async def create_transaction(transaction):
     total_value = transaction.shares * transaction.price
@@ -67,9 +69,19 @@ async def get_portfolio():
     for symbol, symbol_transactions in positions.items():
         position = calculate_position(symbol_transactions)
 
+        stock_quote = await get_stock_quote(symbol)
+        current_price = Decimal(str(stock_quote.price))
+
+        market_value = Decimal(position["shares"]) * current_price
+        profit_loss = market_value - position["invested_value"]
+
         result.append({
             "symbol": symbol,
-            **position
+            "shares": position["shares"],
+            "invested_value": position["invested_value"],
+            "current_price": current_price,
+            "market_value": market_value,
+            "profit_loss": profit_loss
         })
-
+        await asyncio.sleep(1)
     return result
