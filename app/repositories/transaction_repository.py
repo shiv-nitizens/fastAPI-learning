@@ -1,6 +1,7 @@
 from app.database.mongodb import db
 from bson.decimal128 import Decimal128
 from decimal import Decimal
+from app.models.transaction import Transaction, TransactionType
 
 async def create_transaction(transaction):
     document = {
@@ -19,11 +20,24 @@ async def create_transaction(transaction):
 
 async def get_all_transactions():
     cursor = db.transactions.find()
-
     documents = await cursor.to_list(length=None)
 
-    for document in documents:
-        document["price"] = Decimal(document["price"].to_decimal())
-        document["total_value"] = Decimal(document["total_value"].to_decimal())
+    transactions = []
 
-    return documents
+    for document in documents:
+        price = Decimal(document["price"].to_decimal())
+        total_value = Decimal(document["total_value"].to_decimal())
+
+        transaction = Transaction(
+            id=document["id"],
+            symbol=document["symbol"],
+            type=TransactionType(document["type"]),
+            shares=document["shares"],
+            price=price,
+            total_value=total_value,
+            created_at=document["created_at"]
+        )
+
+        transactions.append(transaction)
+
+    return transactions

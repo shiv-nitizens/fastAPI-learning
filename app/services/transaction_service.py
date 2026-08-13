@@ -1,7 +1,8 @@
 from datetime import datetime, timezone
 from uuid import uuid4
-from app.models.transaction import Transaction
+from app.models.transaction import Transaction, TransactionType
 from app.repositories.transaction_repository import create_transaction as save_transaction , get_all_transactions
+from decimal import Decimal
 
 async def create_transaction(transaction):
     total_value = transaction.shares * transaction.price
@@ -22,3 +23,53 @@ async def create_transaction(transaction):
 
 async def get_transactions():
     return await get_all_transactions()
+
+def calculate_position(transactions):
+    shares = 0
+    invested_value = Decimal("0")
+
+    for transaction in transactions:
+
+        if transaction.type == TransactionType.BUY:
+            shares += transaction.shares
+            invested_value += (
+                Decimal(transaction.shares) * transaction.price
+            )
+
+        elif transaction.type == TransactionType.SELL:
+            average_cost = invested_value / Decimal(shares)
+
+            cost_of_sold_shares = (
+                Decimal(transaction.shares) * average_cost
+            )
+
+            shares -= transaction.shares
+            invested_value -= cost_of_sold_shares
+
+    return {
+        "shares": shares,
+        "invested_value": invested_value
+    }
+
+async def get_portfolio():
+    transactions = await get_all_transactions()
+
+    positions = {}
+
+    for transaction in transactions:
+        if transaction.symbol not in positions:
+            positions[transaction.symbol] = []
+
+        positions[transaction.symbol].append(transaction)
+
+    result = []
+
+    for symbol, symbol_transactions in positions.items():
+        position = calculate_position(symbol_transactions)
+
+        result.append({
+            "symbol": symbol,
+            **position
+        })
+
+    return result
