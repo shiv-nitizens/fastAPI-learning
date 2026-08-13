@@ -1,5 +1,6 @@
 from app.database.mongodb import db
 from bson.decimal128 import Decimal128
+from decimal import Decimal
 
 async def create_transaction(transaction):
     document = {
@@ -15,3 +16,14 @@ async def create_transaction(transaction):
     result = await db.transactions.insert_one(document)
 
     return result.inserted_id
+
+async def get_all_transactions():
+    cursor = db.transactions.find()
+
+    documents = await cursor.to_list(length=None)
+
+    for document in documents:
+        document["price"] = Decimal(document["price"].to_decimal())
+        document["total_value"] = Decimal(document["total_value"].to_decimal())
+
+    return documents

@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from uuid import uuid4
 from app.models.transaction import Transaction
-from app.repositories.transaction_repository import create_transaction as save_transaction
+from app.repositories.transaction_repository import create_transaction as save_transaction , get_all_transactions
 
 async def create_transaction(transaction):
     total_value = transaction.shares * transaction.price
@@ -19,3 +19,6 @@ async def create_transaction(transaction):
     await save_transaction(transaction_model)
 
     return transaction_model
+
+async def get_transactions():
+    return await get_all_transactions()

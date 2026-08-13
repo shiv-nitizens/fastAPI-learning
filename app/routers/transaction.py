@@ -1,6 +1,6 @@
 from fastapi import APIRouter, status
 from app.schemas.transaction import TransactionCreate, TransactionResponse
-from app.services.transaction_service import create_transaction
+from app.services.transaction_service import create_transaction,get_transactions as get_transactions_service
 
 
 router = APIRouter(
@@ -15,3 +15,9 @@ router = APIRouter(
 )
 async def create_transaction_endpoint(transaction: TransactionCreate):
     return await create_transaction(transaction)
+
+@router.get(
+    "",
+    response_model=list[TransactionResponse])
+async def get_transactions():
+    return await get_transactions_service()
