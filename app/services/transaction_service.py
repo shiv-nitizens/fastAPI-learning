@@ -66,6 +66,10 @@ async def get_portfolio():
 
     result = []
 
+    total_invested_value = Decimal("0")
+    total_market_value = Decimal("0")
+    total_profit_loss = Decimal("0")
+
     for symbol, symbol_transactions in positions.items():
         position = calculate_position(symbol_transactions)
 
@@ -83,5 +87,16 @@ async def get_portfolio():
             "market_value": market_value,
             "profit_loss": profit_loss
         })
+
+        total_invested_value += position["invested_value"]
+        total_market_value += market_value
+        total_profit_loss += profit_loss
+
         await asyncio.sleep(1)
-    return result
+
+    return {
+        "positions": result,
+        "total_invested_value": total_invested_value,
+        "total_market_value": total_market_value,
+        "total_profit_loss": total_profit_loss
+    }
