@@ -12,6 +12,7 @@ class Transaction:
     def __init__(
         self,
         id: UUID,
+        user_id: UUID,
         symbol: str,
         type: TransactionType,
         shares: int,
@@ -20,6 +21,7 @@ class Transaction:
         created_at: datetime
     ):
         self.id = id
+        self.user_id = user_id
         self.symbol = symbol
         self.type = type
         self.shares = shares

@@ -1,16 +1,17 @@
 from datetime import datetime, timezone
 from uuid import uuid4
 from app.models.transaction import Transaction, TransactionType
-from app.repositories.transaction_repository import create_transaction as save_transaction , get_all_transactions , get_transactions_by_symbol as get_transactions_by_symbol_repository
+from app.repositories.transaction_repository import create_transaction as save_transaction , get_all_transactions , get_transactions_by_symbol as get_transactions_by_symbol_repository,get_transactions_by_user_id
 from decimal import Decimal
 from app.services.stock_service import get_stock_quote
 import asyncio
 
-async def create_transaction(transaction):
+async def create_transaction(transaction,user):
     total_value = transaction.shares * transaction.price
 
     transaction_model = Transaction(
         id=uuid4(),
+        user_id=user["id"],
         symbol=transaction.symbol,
         type=transaction.type,
         shares=transaction.shares,
@@ -23,8 +24,8 @@ async def create_transaction(transaction):
 
     return transaction_model
 
-async def get_transactions():
-    return await get_all_transactions()
+async def get_transactions(user):
+    return await get_transactions_by_user_id(user["id"])
 
 def calculate_position(transactions):
     shares = 0
@@ -53,9 +54,8 @@ def calculate_position(transactions):
         "invested_value": invested_value
     }
 
-async def get_portfolio():
-    transactions = await get_all_transactions()
-
+async def get_portfolio(user):
+    transactions = await get_transactions_by_user_id(user["id"])
     positions = {}
 
     for transaction in transactions:

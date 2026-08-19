@@ -6,6 +6,7 @@ from app.models.transaction import Transaction, TransactionType
 async def create_transaction(transaction):
     document = {
         "id": transaction.id,
+        "user_id": transaction.user_id,
         "symbol": transaction.symbol,
         "type": transaction.type.value,
         "shares": transaction.shares,
@@ -30,6 +31,7 @@ async def get_all_transactions():
 
         transaction = Transaction(
             id=document["id"],
+            user_id=document["user_id"],
             symbol=document["symbol"],
             type=TransactionType(document["type"]),
             shares=document["shares"],
@@ -61,3 +63,28 @@ async def get_transactions_by_symbol(symbol):
         )
 
     return documents
+
+async def get_transactions_by_user_id(user_id):
+    cursor = db.transactions.find({
+        "user_id": user_id
+    })
+
+    documents = await cursor.to_list(length=None)
+
+    transactions = []
+
+    for document in documents:
+        transaction = Transaction(
+            id=document["id"],
+            user_id=document["user_id"],
+            symbol=document["symbol"],
+            type=TransactionType(document["type"]),
+            shares=document["shares"],
+            price=Decimal(document["price"].to_decimal()),
+            total_value=Decimal(document["total_value"].to_decimal()),
+            created_at=document["created_at"]
+        )
+
+        transactions.append(transaction)
+
+    return transactions
