@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from uuid import uuid4
 from app.models.transaction import Transaction, TransactionType
-from app.repositories.transaction_repository import create_transaction as save_transaction , get_all_transactions
+from app.repositories.transaction_repository import create_transaction as save_transaction , get_all_transactions , get_transactions_by_symbol as get_transactions_by_symbol_repository
 from decimal import Decimal
 from app.services.stock_service import get_stock_quote
 import asyncio
@@ -100,3 +100,6 @@ async def get_portfolio():
         "total_market_value": total_market_value,
         "total_profit_loss": total_profit_loss
     }
+
+async def get_transactions_by_symbol(symbol):
+    return await get_transactions_by_symbol_repository(symbol)

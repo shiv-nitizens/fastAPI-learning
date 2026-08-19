@@ -41,3 +41,23 @@ async def get_all_transactions():
         transactions.append(transaction)
 
     return transactions
+
+async def get_transactions_by_symbol(symbol):
+    cursor = db.transactions.find({
+        "symbol": symbol
+    })
+
+    documents = await cursor.to_list(length=None)
+
+    for document in documents:
+        document.pop("_id", None)
+
+        document["price"] = Decimal(
+            document["price"].to_decimal()
+        )
+
+        document["total_value"] = Decimal(
+            document["total_value"].to_decimal()
+        )
+
+    return documents
