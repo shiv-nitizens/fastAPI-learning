@@ -19,33 +19,9 @@ async def create_transaction(transaction):
 
     return result.inserted_id
 
-async def get_all_transactions():
-    cursor = db.transactions.find()
-    documents = await cursor.to_list(length=None)
-
-    transactions = []
-
-    for document in documents:
-        price = Decimal(document["price"].to_decimal())
-        total_value = Decimal(document["total_value"].to_decimal())
-
-        transaction = Transaction(
-            id=document["id"],
-            user_id=document["user_id"],
-            symbol=document["symbol"],
-            type=TransactionType(document["type"]),
-            shares=document["shares"],
-            price=price,
-            total_value=total_value,
-            created_at=document["created_at"]
-        )
-
-        transactions.append(transaction)
-
-    return transactions
-
-async def get_transactions_by_symbol(symbol):
+async def get_transactions_by_symbol(symbol,user_id):
     cursor = db.transactions.find({
+        "user_id":user_id,
         "symbol": symbol
     })
 
